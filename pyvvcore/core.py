@@ -27,7 +27,7 @@ class VVCore:
             VOICEVOX C++ ライブラリのインスタンスを指定します。
         """
         self.core = core
-        self.core.initialize.argtypes = [c_char_p, c_bool, c_int]
+        self.core.initialize.argtypes = [c_bool, c_int]
         self.core.initialize.restype = c_bool
         self.core.finalize.argtypes = []
         self.core.finalize.restype = None
@@ -80,7 +80,6 @@ class VVCore:
 
     def initialize(
         self,
-        root_dir_path: Union[bytes, c_char_p],
         use_gpu: c_bool,
         cpu_num_threads: Union[int, c_int] = 0,
     ) -> bool:
@@ -89,9 +88,6 @@ class VVCore:
 
         Parameters
         ----------
-        root_dir_path: bytes or ctypes.c_char_p
-            必要なファイルがあるディレクトリを指定します。
-            相対パス、絶対パスの両方が指定可能です。
         use_gpu: ctypes.c_bool
             TrueならGPU用の初期化、FalseならCPU用の初期化を行います。
         cpu_num_threads: int or ctypes.c_int, default 0
@@ -103,7 +99,7 @@ class VVCore:
         bool
             成功したらTrue、失敗したらFalseが返されます。
         """
-        return self.core.initialize(root_dir_path, use_gpu, cpu_num_threads)
+        return self.core.initialize(use_gpu, cpu_num_threads)
 
     def finalize(self) -> None:
         """

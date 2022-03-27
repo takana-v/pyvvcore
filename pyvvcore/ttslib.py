@@ -18,7 +18,6 @@ class VVTTSLib:
         use_gpu: bool = False,
         cpu_num_threads: int = 0,
         dict_dir: Optional[Union[str, Path]] = None,
-        init_dir: Optional[Union[str, Path]] = None,
         ort_path: Optional[Union[str, Path]] = None,
         enable_faulthandler: bool = True,
     ):
@@ -37,9 +36,6 @@ class VVTTSLib:
         dict_dir: str or pathlib.Path, optional
             OpenJTalkが使用する辞書があるディレクトリのパスを指定します。
             指定が無い場合、OpenJTalkの初期化は行われません。
-        init_dir: str or pathlib.Path, optional
-            コアの初期化を行う際のディレクトリのパスを指定します。
-            指定が無い場合、cpplib_pathのディレクトリが代わりに使用されます。
         ort_path: str or pathlib.Path, optional
             Onnx Runtimeのパスを指定します。
             指定した場合、指定されたライブラリをプリロードします。
@@ -56,18 +52,11 @@ class VVTTSLib:
             ttslib_path = Path(ttslib_path)
         ttslib_path.expanduser().resolve(strict=True)
 
-        if init_dir is None:
-            init_dir = ttslib_path.parent
-        elif isinstance(init_dir, str):
-            init_dir = Path(init_dir)
-        init_dir.expanduser().resolve(strict=True)
-
         if enable_faulthandler:
             if not faulthandler.is_enabled():
                 faulthandler.enable()
         self.core = VVCore(CDLL(str(ttslib_path)))
         init_res = self.core.initialize(
-            root_dir_path=str(init_dir).encode(encoding="utf-8"),
             use_gpu=c_bool(use_gpu),
             cpu_num_threads=cpu_num_threads,
         )
